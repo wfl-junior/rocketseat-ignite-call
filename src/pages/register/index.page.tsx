@@ -1,10 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
+import { AxiosError } from "axios";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { InputControl } from "~/components/InputControl";
 import { api } from "~/lib/axios";
 import { RegisterFormData, registerFormSchema } from "~/validation/register";
@@ -37,7 +39,11 @@ const Register: NextPage<RegisterProps> = () => {
       const { data } = await api.post("/users", values);
       console.log(data);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        toast(error.response.data.message, {
+          type: "error",
+        });
+      }
     }
   });
 
