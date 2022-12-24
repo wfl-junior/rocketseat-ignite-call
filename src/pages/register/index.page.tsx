@@ -1,41 +1,35 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
+import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Container, Form, FormError, Header } from "./styles";
-
-const registerFormSchema = z.object({
-  username: z
-    .string({ required_error: "O nome de usuário é obrigatório." })
-    .min(3, "O nome de usuário deve conter no mínimo 3 caracteres.")
-    .regex(
-      /^([a-z\\-]+)$/i,
-      "O nome de usuário pode conter apenas letras e hifens.",
-    )
-    .transform(username => username.toLowerCase()),
-  name: z
-    .string({ required_error: "O nome é obrigatório." })
-    .min(3, "O nome deve conter no mínimo 3 caracteres."),
-});
-
-type RegisterFormData = z.infer<typeof registerFormSchema>;
+import { InputControl } from "~/components/InputControl";
+import { RegisterFormData, registerFormSchema } from "~/validation/register";
+import { Container, Form, Header } from "./styles";
 
 interface RegisterProps {}
 
 const Register: NextPage<RegisterProps> = () => {
+  const { query } = useRouter();
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
-    values: {
+    defaultValues: {
       username: "",
       name: "",
     },
   });
+
+  useEffect(() => {
+    if (!query.username) return;
+    setValue("username", String(query.username));
+  }, [setValue, query.username]);
 
   const handleRegister = handleSubmit(values => {
     console.log(values);
@@ -55,38 +49,20 @@ const Register: NextPage<RegisterProps> = () => {
       </Header>
 
       <Form as="form" onSubmit={handleRegister}>
-        <div>
-          <Text as="label" size="sm" htmlFor="username">
-            Nome de usuário
-          </Text>
+        <InputControl
+          label="Nome de usuário"
+          prefix="ignite.com/"
+          placeholder="seu-usuario"
+          errorMessage={errors.username?.message}
+          {...register("username")}
+        />
 
-          <TextInput
-            prefix="ignite.com/"
-            placeholder="seu-usuario"
-            id="username"
-            {...register("username")}
-          />
-
-          {errors.username?.message && (
-            <FormError size="sm" as="span">
-              {errors.username.message}
-            </FormError>
-          )}
-        </div>
-
-        <div>
-          <Text as="label" size="sm" htmlFor="name">
-            Nome completo
-          </Text>
-
-          <TextInput placeholder="Seu nome" id="name" {...register("name")} />
-
-          {errors.name?.message && (
-            <FormError size="sm" as="span">
-              {errors.name.message}
-            </FormError>
-          )}
-        </div>
+        <InputControl
+          label="Nome completo"
+          placeholder="Seu nome"
+          errorMessage={errors.name?.message}
+          {...register("name")}
+        />
 
         <Button type="submit" disabled={isSubmitting}>
           Próximo Passo

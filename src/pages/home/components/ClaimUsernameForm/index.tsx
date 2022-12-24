@@ -1,40 +1,32 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text, TextInput } from "@ignite-ui/react";
+import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
 import { Fragment } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import {
+  ClaimUsernameFormData,
+  claimUsernameFormSchema,
+} from "~/validation/claim-username";
 import { Form, FormAnnotation } from "./styles";
-
-const claimUsernameFormSchema = z.object({
-  username: z
-    .string({ required_error: "O nome de usuário é obrigatório." })
-    .min(3, "O nome de usuário deve conter no mínimo 3 caracteres.")
-    .regex(
-      /^([a-z\\-]+)$/i,
-      "O nome de usuário pode conter apenas letras e hifens.",
-    )
-    .transform(username => username.toLowerCase()),
-});
-
-type ClaimUsernameFormData = z.infer<typeof claimUsernameFormSchema>;
 
 interface ClaimUsernameFormProps {}
 
 export const ClaimUsernameForm: React.FC<ClaimUsernameFormProps> = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ClaimUsernameFormData>({
     resolver: zodResolver(claimUsernameFormSchema),
-    values: {
+    defaultValues: {
       username: "",
     },
   });
 
-  const handleClaimUsername = handleSubmit(values => {
-    console.log(values);
+  const handleClaimUsername = handleSubmit(async values => {
+    await router.push(`/register?username=${values.username}`);
   });
 
   return (
@@ -47,7 +39,7 @@ export const ClaimUsernameForm: React.FC<ClaimUsernameFormProps> = () => {
           {...register("username")}
         />
 
-        <Button size="sm" type="submit">
+        <Button size="sm" type="submit" disabled={isSubmitting}>
           Reservar
           <ArrowRight />
         </Button>

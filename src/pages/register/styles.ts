@@ -24,14 +24,4 @@ export const Form = styled(Box, {
   display: "flex",
   flexDirection: "column",
   gap: "$4",
-
-  "> div": {
-    display: "flex",
-    flexDirection: "column",
-    gap: "$2",
-  },
-});
-
-export const FormError = styled(Text, {
-  color: "#F75A68",
 });
