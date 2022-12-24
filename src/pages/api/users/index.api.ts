@@ -1,6 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { setCookie } from "nookies";
+import { ZodError } from "zod";
 import { prisma } from "~/lib/prisma";
 import { registerFormSchema } from "~/validation/register";
 
@@ -11,7 +12,6 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
 
   try {
     const newUserData = registerFormSchema.parse(request.body);
-
     const user = await prisma.user.create({
       data: newUserData,
     });
@@ -33,6 +33,16 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
       return response.status(400).json({
         ok: false,
         message: "Nome de usuário já cadastrado.",
+      });
+    }
+
+    if (error instanceof ZodError) {
+      return response.status(422).json({
+        ok: false,
+        errors: error.formErrors.fieldErrors,
+        message:
+          Object.values(error.formErrors.fieldErrors)[0]?.[0] ??
+          "Erro de validação de dados.",
       });
     }
 

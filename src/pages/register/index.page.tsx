@@ -39,11 +39,19 @@ const Register: NextPage<RegisterProps> = () => {
       await api.post("/users", data);
       await push("/register/connect-calendar");
     } catch (error) {
-      if (error instanceof AxiosError && error.response?.data?.message) {
-        toast(error.response.data.message, {
+      if (
+        error instanceof AxiosError &&
+        error.response?.status === 400 &&
+        error.response?.data?.message
+      ) {
+        return toast(error.response.data.message, {
           type: "error",
         });
       }
+
+      toast("Ocorreu um erro inesperado.", {
+        type: "error",
+      });
     }
   });
 
