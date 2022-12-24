@@ -4,7 +4,11 @@
     "jsx": true,
     "useJSXTextNode": true
   },
-  "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
   "plugins": ["@typescript-eslint", "react-hooks"],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
