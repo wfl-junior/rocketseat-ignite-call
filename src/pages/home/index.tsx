@@ -2,6 +2,7 @@ import { Heading, Text } from "@ignite-ui/react";
 import type { NextPage } from "next";
 import Image from "next/image";
 import previewImage from "~/assets/app-preview.png";
+import { ClaimUsernameForm } from "./components/ClaimUsernameForm";
 import { Container, Hero, Preview } from "./styles";
 
 const Home: NextPage = () => (
@@ -15,6 +16,8 @@ const Home: NextPage = () => (
         Conecte seu calendário e permita que as pessoas marquem agendamentos no
         seu tempo livre.
       </Text>
+
+      <ClaimUsernameForm />
     </Hero>
 
     <Preview>
