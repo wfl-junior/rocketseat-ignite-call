@@ -25,8 +25,8 @@ export const ClaimUsernameForm: React.FC<ClaimUsernameFormProps> = () => {
     },
   });
 
-  const handleClaimUsername = handleSubmit(async values => {
-    await router.push(`/register?username=${values.username}`);
+  const handleClaimUsername = handleSubmit(async data => {
+    await router.push(`/register?username=${data.username}`);
   });
 
   return (

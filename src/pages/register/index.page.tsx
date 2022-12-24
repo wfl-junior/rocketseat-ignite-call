@@ -15,7 +15,7 @@ import { Container, Form, Header } from "./styles";
 interface RegisterProps {}
 
 const Register: NextPage<RegisterProps> = () => {
-  const { query } = useRouter();
+  const { query, push } = useRouter();
   const {
     register,
     handleSubmit,
@@ -34,10 +34,10 @@ const Register: NextPage<RegisterProps> = () => {
     setValue("username", String(query.username));
   }, [setValue, query.username]);
 
-  const handleRegister = handleSubmit(async values => {
+  const handleRegister = handleSubmit(async data => {
     try {
-      const { data } = await api.post("/users", values);
-      console.log(data);
+      await api.post("/users", data);
+      await push("/register/connect-calendar");
     } catch (error) {
       if (error instanceof AxiosError && error.response?.data?.message) {
         toast(error.response.data.message, {
