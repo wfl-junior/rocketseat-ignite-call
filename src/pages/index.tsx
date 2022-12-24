@@ -1,8 +1,10 @@
-import { Inter } from "@next/font/google";
+import { Heading } from "@ignite-ui/react";
 import type { NextPage } from "next";
 
-const inter = Inter({ subsets: ["latin"] });
-
-const Home: NextPage = () => <h1 className={inter.className}>Hello World</h1>;
+const Home: NextPage = () => (
+  <div>
+    <Heading as="h1">Hello World</Heading>
+  </div>
+);
 
 export default Home;
