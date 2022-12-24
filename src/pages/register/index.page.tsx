@@ -6,6 +6,7 @@ import { ArrowRight } from "phosphor-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { InputControl } from "~/components/InputControl";
+import { api } from "~/lib/axios";
 import { RegisterFormData, registerFormSchema } from "~/validation/register";
 import { Container, Form, Header } from "./styles";
 
@@ -31,8 +32,13 @@ const Register: NextPage<RegisterProps> = () => {
     setValue("username", String(query.username));
   }, [setValue, query.username]);
 
-  const handleRegister = handleSubmit(values => {
-    console.log(values);
+  const handleRegister = handleSubmit(async values => {
+    try {
+      const { data } = await api.post("/users", values);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   return (
