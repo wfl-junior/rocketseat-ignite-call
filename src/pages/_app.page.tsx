@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { Fragment } from "react";
@@ -7,13 +8,18 @@ import { globalStyles } from "~/styles/global";
 
 globalStyles();
 
-const App: React.FC<AppProps> = ({ Component, pageProps }) => (
+const App: React.FC<AppProps> = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}) => (
   <Fragment>
     <Head>
       <title>Ignite Call</title>
     </Head>
 
-    <Component {...pageProps} />
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+    </SessionProvider>
 
     <ToastContainer
       position="top-right"

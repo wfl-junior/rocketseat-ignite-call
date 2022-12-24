@@ -1,12 +1,17 @@
 import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
 import type { NextPage } from "next";
+import { signIn } from "next-auth/react";
 import { ArrowRight } from "phosphor-react";
 import { Container, Header } from "../styles";
 import { ConnectBox, ConnectItem } from "./styles";
 
-interface RegisterProps {}
+interface ConnectCalendarProps {}
 
-const Register: NextPage<RegisterProps> = () => {
+const ConnectCalendar: NextPage<ConnectCalendarProps> = () => {
+  function handleSignInWithGoogle() {
+    return signIn("google");
+  }
+
   return (
     <Container>
       <Header>
@@ -24,7 +29,11 @@ const Register: NextPage<RegisterProps> = () => {
         <ConnectItem>
           <Text>Google Calendar</Text>
 
-          <Button variant="secondary" size="sm">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleSignInWithGoogle}
+          >
             Conectar
             <ArrowRight />
           </Button>
@@ -39,4 +48,4 @@ const Register: NextPage<RegisterProps> = () => {
   );
 };
 
-export default Register;
+export default ConnectCalendar;
