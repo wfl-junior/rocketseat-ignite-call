@@ -1,6 +1,6 @@
 import { Heading, styled, Text } from "@ignite-ui/react";
 
-export const Container = styled("div", {
+export const Container = styled("main", {
   display: "flex",
   alignItems: "center",
   gap: "$20",
