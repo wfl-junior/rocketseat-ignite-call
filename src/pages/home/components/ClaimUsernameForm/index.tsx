@@ -13,7 +13,7 @@ import { Form, FormAnnotation } from "./styles";
 interface ClaimUsernameFormProps {}
 
 export const ClaimUsernameForm: React.FC<ClaimUsernameFormProps> = () => {
-  const router = useRouter();
+  const { push: navigate } = useRouter();
   const {
     register,
     handleSubmit,
@@ -26,7 +26,7 @@ export const ClaimUsernameForm: React.FC<ClaimUsernameFormProps> = () => {
   });
 
   const handleClaimUsername = handleSubmit(async data => {
-    await router.push(`/register?username=${data.username}`);
+    await navigate(`/register?username=${data.username}`);
   });
 
   return (

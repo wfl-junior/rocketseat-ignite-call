@@ -8,6 +8,7 @@ import {
   TextInput,
 } from "@ignite-ui/react";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -34,6 +35,7 @@ const weekDays = getWeekDays();
 interface TimeIntervalsProps {}
 
 const TimeIntervals: NextPage<TimeIntervalsProps> = () => {
+  const { push: navigate } = useRouter();
   const {
     watch,
     control,
@@ -65,10 +67,9 @@ const TimeIntervals: NextPage<TimeIntervalsProps> = () => {
     // @ts-expect-error
     async (data: TimeIntervalsFormOutput) => {
       try {
-        const response = await api.post("/users/time-intervals", data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
+        await api.post("/users/time-intervals", data);
+        await navigate("/register/update-profile");
+      } catch {
         toast(messages.UNEXPECTED_ERROR, { type: "error" });
       }
     },

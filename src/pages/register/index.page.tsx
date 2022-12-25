@@ -16,7 +16,7 @@ import { Container, Form, Header } from "./styles";
 interface RegisterProps {}
 
 const Register: NextPage<RegisterProps> = () => {
-  const { query, push } = useRouter();
+  const { query, push: navigate } = useRouter();
   const {
     register,
     handleSubmit,
@@ -38,7 +38,7 @@ const Register: NextPage<RegisterProps> = () => {
   const handleRegister = handleSubmit(async data => {
     try {
       await api.post("/users", data);
-      await push("/register/connect-calendar");
+      await navigate("/register/connect-calendar");
     } catch (error) {
       if (
         error instanceof AxiosError &&

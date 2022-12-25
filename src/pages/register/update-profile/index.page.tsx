@@ -1,13 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
+import { Avatar, Button, Heading, MultiStep, Text } from "@ignite-ui/react";
 import type { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { TextAreaControl } from "~/components/TextAreaControl";
 import { messages } from "~/constants";
+import { api } from "~/lib/axios";
 import { buildNextAuthOptions } from "~/pages/api/auth/[...nextauth].api";
 import {
   UpdateProfileFormData,
@@ -47,6 +49,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 };
 
 const UpdateProfile: NextPage<UpdateProfileProps> = () => {
+  const { push: navigate } = useRouter();
   const { data: session } = useSession();
   const {
     register,
@@ -59,12 +62,11 @@ const UpdateProfile: NextPage<UpdateProfileProps> = () => {
     },
   });
 
-  console.log(session);
-
   const handleUpdateProfile = handleSubmit(async data => {
     try {
-      console.log(data);
-    } catch (error) {
+      await api.patch("/users/profile", data);
+      await navigate(`/schedule/${session?.user.username}`);
+    } catch {
       toast(messages.UNEXPECTED_ERROR, { type: "error" });
     }
   });
@@ -72,17 +74,21 @@ const UpdateProfile: NextPage<UpdateProfileProps> = () => {
   return (
     <Container>
       <Header>
-        <Heading as="strong">Defina sua disponibilidade</Heading>
-
+        <Heading as="strong">Atualize seu perfil</Heading>
         <Text>Por último, uma breve descrição e uma foto de perfil.</Text>
-
         <MultiStep size={4} currentStep={4} />
       </Header>
 
       <ProfileForm as="form" onSubmit={handleUpdateProfile}>
-        <Text as="label" size="sm">
-          Foto de perfil
-        </Text>
+        <div>
+          <Text size="sm">Foto de perfil</Text>
+
+          <Avatar
+            src={session?.user.avatarUrl ?? undefined}
+            alt={session?.user.name ?? ""}
+            referrerPolicy="no-referrer"
+          />
+        </div>
 
         <TextAreaControl
           label="Sobre você"

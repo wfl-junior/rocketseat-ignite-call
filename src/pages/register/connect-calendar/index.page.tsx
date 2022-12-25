@@ -10,7 +10,7 @@ interface ConnectCalendarProps {}
 
 const ConnectCalendar: NextPage<ConnectCalendarProps> = () => {
   const { status } = useSession();
-  const { query, push } = useRouter();
+  const { query, push: navigate } = useRouter();
 
   const hasAuthError = Boolean(query.error);
   const isAuthenticated = status === "authenticated";
@@ -19,8 +19,8 @@ const ConnectCalendar: NextPage<ConnectCalendarProps> = () => {
     return signIn("google");
   }
 
-  function navigateToTimeIntervals() {
-    return push("/register/time-intervals");
+  function handleNavigateToNextStep() {
+    return navigate("/register/time-intervals");
   }
 
   return (
@@ -67,7 +67,7 @@ const ConnectCalendar: NextPage<ConnectCalendarProps> = () => {
         <Button
           type="submit"
           disabled={!isAuthenticated || hasAuthError}
-          onClick={navigateToTimeIntervals}
+          onClick={handleNavigateToNextStep}
         >
           Próximo Passo
           <ArrowRight />

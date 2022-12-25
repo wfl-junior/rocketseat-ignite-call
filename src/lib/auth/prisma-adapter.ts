@@ -7,10 +7,11 @@ import { prisma } from "../prisma";
 
 const transformUser = (user: User): AdapterUser => ({
   id: user.id,
-  name: user.name,
   username: user.username,
+  name: user.name,
+  bio: user.bio,
   email: user.email!,
-  avatarUrl: user.avatarUrl!,
+  avatarUrl: user.avatarUrl,
   emailVerified: null,
   createdAt: user.createdAt,
 });
