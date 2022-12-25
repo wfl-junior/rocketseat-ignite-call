@@ -16,11 +16,11 @@ export const InputControl = forwardRef<HTMLInputElement, InputControlProps>(
 
       <TextInput ref={ref} id={props.name} {...props} />
 
-      {errorMessage && (
+      {errorMessage ? (
         <ErrorMessage size="sm" as="span">
           {errorMessage}
         </ErrorMessage>
-      )}
+      ) : null}
     </InputControlContainer>
   ),
 );
