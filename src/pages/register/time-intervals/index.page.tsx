@@ -10,6 +10,9 @@ import {
 import type { NextPage } from "next";
 import { ArrowRight } from "phosphor-react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { messages } from "~/constants";
+import { api } from "~/lib/axios";
 import { getWeekDays } from "~/utils/get-week-days";
 import {
   TimeIntervalsFormInput,
@@ -60,8 +63,14 @@ const TimeIntervals: NextPage<TimeIntervalsProps> = () => {
 
   const handleSetTimeIntervals = handleSubmit(
     // @ts-expect-error
-    (data: TimeIntervalsFormOutput) => {
-      console.log(data);
+    async (data: TimeIntervalsFormOutput) => {
+      try {
+        const response = await api.post("/users/time-intervals", data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+        toast(messages.UNEXPECTED_ERROR, { type: "error" });
+      }
     },
   );
 

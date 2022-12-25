@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,8 +15,9 @@ model User {
   avatarUrl String?
   createdAt DateTime @default(now())
 
-  accounts Account[]
-  sessions Session[]
+  accounts      Account[]
+  sessions      Session[]
+  timeIntervals TimeInterval[]
 
   @@map("users")
 }
@@ -27,12 +28,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refreshToken      String?
-  accessToken       String?
+  refreshToken      String? @db.Text
+  accessToken       String? @db.Text
   expiresAt         Int?
   tokenType         String?
   scope             String?
-  idToken           String?
+  idToken           String? @db.Text
   sessionState      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -50,4 +51,16 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model TimeInterval {
+  id                 String @id @default(uuid())
+  userId             String
+  weekDay            Int
+  startTimeInMinutes Int
+  endTimeInMinutes   Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("time_intervals")
 }

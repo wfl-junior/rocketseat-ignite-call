@@ -4,6 +4,8 @@ import { setCookie } from "nookies";
 import { ZodError } from "zod";
 import { userIdCookieName } from "~/constants";
 import { prisma } from "~/lib/prisma";
+import { internalServerErrorResponse } from "~/utils/internal-server-error-response";
+import { zodErrorResponse } from "~/utils/zod-error-response";
 import { registerFormSchema } from "~/validation/register";
 
 async function handler(request: NextApiRequest, response: NextApiResponse) {
@@ -38,19 +40,10 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     }
 
     if (error instanceof ZodError) {
-      return response.status(422).json({
-        ok: false,
-        errors: error.formErrors.fieldErrors,
-        message:
-          Object.values(error.formErrors.fieldErrors)[0]?.[0] ??
-          "Erro de validação de dados.",
-      });
+      return zodErrorResponse(response, error);
     }
 
-    return response.status(500).json({
-      ok: false,
-      message: "Houston, we have a problem.",
-    });
+    return internalServerErrorResponse(response);
   }
 }
 

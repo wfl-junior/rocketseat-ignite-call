@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { InputControl } from "~/components/InputControl";
+import { messages } from "~/constants";
 import { api } from "~/lib/axios";
 import { RegisterFormData, registerFormSchema } from "~/validation/register";
 import { Container, Form, Header } from "./styles";
@@ -44,14 +45,10 @@ const Register: NextPage<RegisterProps> = () => {
         error.response?.status === 400 &&
         error.response?.data?.message
       ) {
-        return toast(error.response.data.message, {
-          type: "error",
-        });
+        return toast(error.response.data.message, { type: "error" });
       }
 
-      toast("Ocorreu um erro inesperado.", {
-        type: "error",
-      });
+      toast(messages.UNEXPECTED_ERROR, { type: "error" });
     }
   });
 

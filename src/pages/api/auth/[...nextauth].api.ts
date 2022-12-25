@@ -43,6 +43,9 @@ export function buildNextAuthOptions(
       },
 
       async session({ session, user }) {
+        // @ts-expect-error
+        delete user.emailVerified;
+
         return {
           ...session,
           user,
