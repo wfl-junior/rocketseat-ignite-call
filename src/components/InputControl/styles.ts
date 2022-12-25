@@ -7,5 +7,5 @@ export const InputControlContainer = styled("div", {
 });
 
 export const ErrorMessage = styled(Text, {
-  color: "#F75A68",
+  color: "var(--color-error)",
 });
