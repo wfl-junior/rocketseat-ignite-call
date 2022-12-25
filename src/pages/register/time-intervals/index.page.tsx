@@ -1,0 +1,78 @@
+import {
+  Button,
+  Checkbox,
+  Heading,
+  MultiStep,
+  Text,
+  TextInput,
+} from "@ignite-ui/react";
+import type { NextPage } from "next";
+import { ArrowRight } from "phosphor-react";
+import { Container, Header } from "../styles";
+import {
+  IntervalBox,
+  IntervalDay,
+  IntervalInputs,
+  IntervalItem,
+  IntervalsContainer,
+} from "./styles";
+
+interface TimeIntervalsProps {}
+
+const TimeIntervals: NextPage<TimeIntervalsProps> = () => {
+  return (
+    <Container>
+      <Header>
+        <Heading as="strong">Quase lá</Heading>
+
+        <Text>
+          Defina o intervalo de horários que você está disponível em cada dia da
+          semana.
+        </Text>
+
+        <MultiStep size={4} currentStep={3} />
+      </Header>
+
+      <IntervalBox as="form">
+        <IntervalsContainer>
+          <IntervalItem>
+            <IntervalDay>
+              <Checkbox id="monday" />
+
+              <Text as="label" htmlFor="monday">
+                Segunda-feira
+              </Text>
+            </IntervalDay>
+
+            <IntervalInputs>
+              <TextInput type="time" size="sm" step={60} />
+              <TextInput type="time" size="sm" step={60} />
+            </IntervalInputs>
+          </IntervalItem>
+
+          <IntervalItem>
+            <IntervalDay>
+              <Checkbox id="tuesday" />
+
+              <Text as="label" htmlFor="tuesday">
+                Terça-feira
+              </Text>
+            </IntervalDay>
+
+            <IntervalInputs>
+              <TextInput type="time" size="sm" step={60} />
+              <TextInput type="time" size="sm" step={60} />
+            </IntervalInputs>
+          </IntervalItem>
+        </IntervalsContainer>
+
+        <Button type="submit">
+          Próximo passo
+          <ArrowRight />
+        </Button>
+      </IntervalBox>
+    </Container>
+  );
+};
+
+export default TimeIntervals;
