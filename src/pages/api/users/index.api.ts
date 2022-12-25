@@ -2,6 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { setCookie } from "nookies";
 import { ZodError } from "zod";
+import { userIdCookieName } from "~/constants";
 import { prisma } from "~/lib/prisma";
 import { registerFormSchema } from "~/validation/register";
 
@@ -16,7 +17,7 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
       data: newUserData,
     });
 
-    setCookie({ res: response }, "@ignite-call:userId", user.id, {
+    setCookie({ res: response }, userIdCookieName, user.id, {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
