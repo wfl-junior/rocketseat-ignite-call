@@ -12,7 +12,8 @@ import { ArrowRight } from "phosphor-react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { getWeekDays } from "~/utils/get-week-days";
 import {
-  TimeIntervalsFormData,
+  TimeIntervalsFormInput,
+  TimeIntervalsFormOutput,
   timeIntervalsFormSchema,
 } from "~/validation/time-intervals";
 import { Container, Header } from "../styles";
@@ -36,7 +37,7 @@ const TimeIntervals: NextPage<TimeIntervalsProps> = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<TimeIntervalsFormData>({
+  } = useForm<TimeIntervalsFormInput>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -57,9 +58,12 @@ const TimeIntervals: NextPage<TimeIntervalsProps> = () => {
     name: "intervals",
   });
 
-  const handleSetTimeIntervals = handleSubmit(data => {
-    console.log(data);
-  });
+  const handleSetTimeIntervals = handleSubmit(
+    // @ts-expect-error
+    (data: TimeIntervalsFormOutput) => {
+      console.log(data);
+    },
+  );
 
   return (
     <Container>
