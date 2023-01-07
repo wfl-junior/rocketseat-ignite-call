@@ -4,7 +4,7 @@ import { ConfirmStep } from "./ConfirmStep";
 interface ScheduleFormProps {}
 
 export const ScheduleForm: React.FC<ScheduleFormProps> = () => {
-  const isConfirmStep = true;
+  const isConfirmStep = false;
 
   if (isConfirmStep) {
     return <ConfirmStep />;

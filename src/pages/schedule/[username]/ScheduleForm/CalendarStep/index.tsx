@@ -10,7 +10,7 @@ import {
 interface CalendarStepProps {}
 
 export const CalendarStep: React.FC<CalendarStepProps> = () => {
-  const isDateSelected = true;
+  const isDateSelected = false;
 
   return (
     <Container isTimePickerOpen={isDateSelected}>

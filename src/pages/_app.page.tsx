@@ -4,6 +4,7 @@ import Head from "next/head";
 import { Fragment } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import "~/lib/dayjs";
 import { globalStyles } from "~/styles/global";
 
 globalStyles();

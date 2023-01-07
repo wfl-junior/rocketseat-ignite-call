@@ -1,4 +1,7 @@
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import { CaretLeft, CaretRight } from "phosphor-react";
+import { useState } from "react";
 import { getWeekDays } from "~/utils/get-week-days";
 import {
   CalendarActions,
@@ -13,83 +16,102 @@ const shortWeekDays = getWeekDays({ short: true });
 
 interface CalendarProps {}
 
-export const Calendar: React.FC<CalendarProps> = () => (
-  <CalendarContainer>
-    <CalendarHeader>
-      <CalendarTitle>
-        Janeiro <span>2023</span>
-      </CalendarTitle>
+export const Calendar: React.FC<CalendarProps> = () => {
+  const [currentDate, setCurrentDate] = useState(() => {
+    return dayjs().set("date", 1);
+  });
 
-      <CalendarActions>
-        <button>
-          <CaretLeft />
-        </button>
+  function handlePreviousMonth() {
+    const previousMonthDate = currentDate.subtract(1, "month");
+    setCurrentDate(previousMonthDate);
+  }
 
-        <button>
-          <CaretRight />
-        </button>
-      </CalendarActions>
-    </CalendarHeader>
+  function handleNextMonth() {
+    const nextMonthDate = currentDate.add(1, "month");
+    setCurrentDate(nextMonthDate);
+  }
 
-    <CalendarBody>
-      <thead>
-        <tr>
-          {shortWeekDays.map(weekday => (
-            <th key={weekday}>{weekday}.</th>
-          ))}
-        </tr>
-      </thead>
+  const currentMonth = currentDate.format("MMMM");
+  const currentYear = currentDate.format("YYYY");
 
-      <tbody>
-        <tr>
-          <td />
-          <td />
-          <td />
-          <td />
+  return (
+    <CalendarContainer>
+      <CalendarHeader>
+        <CalendarTitle>
+          {currentMonth} <span>{currentYear}</span>
+        </CalendarTitle>
 
-          <td>
-            <CalendarDay>1</CalendarDay>
-          </td>
+        <CalendarActions>
+          <button onClick={handlePreviousMonth} title="Mês anterior">
+            <CaretLeft />
+          </button>
 
-          <td>
-            <CalendarDay>2</CalendarDay>
-          </td>
+          <button onClick={handleNextMonth} title="Próximo mês">
+            <CaretRight />
+          </button>
+        </CalendarActions>
+      </CalendarHeader>
 
-          <td>
-            <CalendarDay disabled>3</CalendarDay>
-          </td>
-        </tr>
+      <CalendarBody>
+        <thead>
+          <tr>
+            {shortWeekDays.map(weekday => (
+              <th key={weekday}>{weekday}.</th>
+            ))}
+          </tr>
+        </thead>
 
-        <tr>
-          <td>
-            <CalendarDay disabled>4</CalendarDay>
-          </td>
+        <tbody>
+          <tr>
+            <td />
+            <td />
+            <td />
+            <td />
 
-          <td>
-            <CalendarDay>5</CalendarDay>
-          </td>
+            <td>
+              <CalendarDay>1</CalendarDay>
+            </td>
 
-          <td>
-            <CalendarDay>6</CalendarDay>
-          </td>
+            <td>
+              <CalendarDay>2</CalendarDay>
+            </td>
 
-          <td>
-            <CalendarDay>7</CalendarDay>
-          </td>
+            <td>
+              <CalendarDay disabled>3</CalendarDay>
+            </td>
+          </tr>
 
-          <td>
-            <CalendarDay>8</CalendarDay>
-          </td>
+          <tr>
+            <td>
+              <CalendarDay disabled>4</CalendarDay>
+            </td>
 
-          <td>
-            <CalendarDay>9</CalendarDay>
-          </td>
+            <td>
+              <CalendarDay>5</CalendarDay>
+            </td>
 
-          <td>
-            <CalendarDay disabled>10</CalendarDay>
-          </td>
-        </tr>
-      </tbody>
-    </CalendarBody>
-  </CalendarContainer>
-);
+            <td>
+              <CalendarDay>6</CalendarDay>
+            </td>
+
+            <td>
+              <CalendarDay>7</CalendarDay>
+            </td>
+
+            <td>
+              <CalendarDay>8</CalendarDay>
+            </td>
+
+            <td>
+              <CalendarDay>9</CalendarDay>
+            </td>
+
+            <td>
+              <CalendarDay disabled>10</CalendarDay>
+            </td>
+          </tr>
+        </tbody>
+      </CalendarBody>
+    </CalendarContainer>
+  );
+};
