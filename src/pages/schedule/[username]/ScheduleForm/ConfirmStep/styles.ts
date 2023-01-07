@@ -29,10 +29,6 @@ export const FormHeader = styled("header", {
   },
 });
 
-export const FormError = styled(Text, {
-  color: "var(--color-error)",
-});
-
 export const FormActions = styled("div", {
   display: "flex",
   alignItems: "center",
