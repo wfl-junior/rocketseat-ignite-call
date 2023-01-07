@@ -15,7 +15,7 @@ export const ScheduleForm: React.FC<ScheduleFormProps> = () => {
     return (
       <ConfirmStep
         schedulingDate={selectedDateTime}
-        onCancel={handleClearSelectedDateTime}
+        onClear={handleClearSelectedDateTime}
       />
     );
   }

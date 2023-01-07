@@ -7,7 +7,6 @@ export const confirmScheduleFormSchema = z.object({
       invalid_type_error: "O nome deve ser uma string.",
     })
     .min(3, "O nome deve conter no mínimo 3 caracteres."),
-
   email: z
     .string({
       required_error: "O e-mail é obrigatório.",
@@ -20,3 +19,12 @@ export const confirmScheduleFormSchema = z.object({
 });
 
 export type ConfirmScheduleFormData = z.infer<typeof confirmScheduleFormSchema>;
+
+export const confirmScheduleApiSchema = confirmScheduleFormSchema.extend({
+  date: z
+    .string({
+      required_error: "A data é obrigatória.",
+      invalid_type_error: "A data deve ser uma string.",
+    })
+    .datetime("A data deve ser uma string de data válida."),
+});

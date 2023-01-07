@@ -1,10 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text } from "@ignite-ui/react";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 import { CalendarBlank, Clock } from "phosphor-react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { InputControl } from "~/components/InputControl";
 import { TextAreaControl } from "~/components/TextAreaControl";
+import { messages } from "~/constants";
+import { api } from "~/lib/axios";
 import {
   ConfirmScheduleFormData,
   confirmScheduleFormSchema,
@@ -13,13 +17,14 @@ import { ConfirmForm, FormActions, FormHeader } from "./styles";
 
 interface ConfirmStepProps {
   schedulingDate: Date;
-  onCancel?: () => void;
+  onClear?: () => void;
 }
 
 export const ConfirmStep: React.FC<ConfirmStepProps> = ({
   schedulingDate,
-  onCancel,
+  onClear,
 }) => {
+  const { query } = useRouter();
   const {
     register,
     handleSubmit,
@@ -33,8 +38,19 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
     },
   });
 
-  const handleConfirmScheduling = handleSubmit(data => {
-    console.log(data);
+  const handleConfirmScheduling = handleSubmit(async data => {
+    try {
+      const username = String(query.username);
+
+      await api.post(`/users/${username}/schedule`, {
+        ...data,
+        date: schedulingDate.toISOString(),
+      });
+
+      onClear?.();
+    } catch {
+      toast(messages.UNEXPECTED_ERROR, { type: "error" });
+    }
   });
 
   const describedDate = dayjs(schedulingDate).format("DD[ de ]MMMM[ de ]YYYY");
@@ -76,7 +92,7 @@ export const ConfirmStep: React.FC<ConfirmStepProps> = ({
       />
 
       <FormActions>
-        <Button type="button" variant="tertiary" onClick={onCancel}>
+        <Button type="button" variant="tertiary" onClick={onClear}>
           Cancelar
         </Button>
 
