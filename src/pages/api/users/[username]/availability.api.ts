@@ -91,6 +91,7 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
       availableTimes,
     });
   } catch (error) {
+    console.log(error);
     return internalServerErrorResponse(response);
   }
 }

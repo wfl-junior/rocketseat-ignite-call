@@ -83,6 +83,10 @@ export const Calendar: React.FC<CalendarProps> = ({
   );
 
   const calendarWeeks = useMemo((): CalendarWeek[] => {
+    if (!blockedDates) {
+      return [];
+    }
+
     const daysInMonthArray = Array.from(
       { length: currentDate.daysInMonth() },
       (_, index) => currentDate.set("date", index + 1),
@@ -112,7 +116,7 @@ export const Calendar: React.FC<CalendarProps> = ({
         return formatCalendarDay(
           date,
           date.endOf("day").isBefore(new Date()) ||
-            Boolean(blockedDates?.blockedWeekDays.includes(date.get("day"))),
+            blockedDates.blockedWeekDays.includes(date.get("day")),
         );
       }),
       ...nextMonthFillArray.map(date => formatCalendarDay(date, true)),

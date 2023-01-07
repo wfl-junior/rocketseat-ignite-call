@@ -43,6 +43,7 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
       return zodErrorResponse(response, error);
     }
 
+    console.log(error);
     return internalServerErrorResponse(response);
   }
 }

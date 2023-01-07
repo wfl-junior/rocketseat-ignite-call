@@ -52,11 +52,24 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
       );
     });
 
+    const blockedDatesRaw = await prisma.$queryRaw`
+      SELECT 
+        *
+      FROM 
+        schedulings s
+      WHERE 
+        s.userId = ${user.id}
+      AND
+        DATE_FORMAT(s.date, "%Y-%m") = ${`${year}-${month}`};
+    `;
+
     return response.status(200).json({
       ok: true,
       blockedWeekDays,
+      blockedDatesRaw,
     });
   } catch (error) {
+    console.log(error);
     return internalServerErrorResponse(response);
   }
 }
