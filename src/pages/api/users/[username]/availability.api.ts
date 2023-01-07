@@ -64,9 +64,29 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
       (_, index) => startHour + index,
     );
 
+    const blockedTimes = await prisma.scheduling.findMany({
+      where: {
+        userId: user.id,
+        date: {
+          gte: referenceDate.set("hour", startHour).toDate(),
+          lte: referenceDate.set("hour", endHour).toDate(),
+        },
+      },
+      select: {
+        date: true,
+      },
+    });
+
+    const availableTimes = possibleTimes.filter(time => {
+      return !blockedTimes.some(
+        blockedTime => blockedTime.date.getHours() === time,
+      );
+    });
+
     return response.status(200).json({
       ok: true,
       possibleTimes,
+      availableTimes,
     });
   } catch (error) {
     return internalServerErrorResponse(response);

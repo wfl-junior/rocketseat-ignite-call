@@ -1,6 +1,10 @@
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { Calendar } from "~/components/Calendar";
+import { messages } from "~/constants";
+import { api } from "~/lib/axios";
 import {
   Container,
   TimePicker,
@@ -12,7 +16,24 @@ import {
 interface CalendarStepProps {}
 
 export const CalendarStep: React.FC<CalendarStepProps> = () => {
+  const { query } = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [availability, setAvailabilily] = useState(null);
+
+  const username = query.username?.toString();
+
+  useEffect(() => {
+    if (!selectedDate || !username) return;
+
+    api
+      .get(`/users/${username}/availability`, {
+        params: {
+          date: selectedDate.toISOString().split("T")[0],
+        },
+      })
+      .then(response => console.log(response.data))
+      .catch(() => toast(messages.UNEXPECTED_ERROR, { type: "error" }));
+  }, [selectedDate, username]);
 
   const isDateSelected = Boolean(selectedDate);
   const weekDay = selectedDate ? dayjs(selectedDate).format("dddd") : null;
