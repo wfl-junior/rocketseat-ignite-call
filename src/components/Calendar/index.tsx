@@ -52,7 +52,7 @@ export const Calendar: React.FC<CalendarProps> = () => (
           </td>
 
           <td>
-            <CalendarDay>2</CalendarDay>
+            <CalendarDay disabled>2</CalendarDay>
           </td>
 
           <td>
