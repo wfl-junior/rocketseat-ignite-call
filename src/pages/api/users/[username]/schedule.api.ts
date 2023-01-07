@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
+import { google } from "googleapis";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ZodError } from "zod";
+import { getGoogleOAuthToken } from "~/lib/google";
 import { prisma } from "~/lib/prisma";
 import { internalServerErrorResponse } from "~/utils/internal-server-error-response";
 import { zodErrorResponse } from "~/utils/zod-error-response";
@@ -13,7 +15,6 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
 
   try {
     const username = request.query.username?.toString();
-
     const user = await prisma.user.findUnique({
       where: { username },
       select: {
@@ -57,6 +58,40 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
         ...createSchedulingData,
         date: schedulingDate.toDate(),
         userId: user.id,
+      },
+    });
+
+    const calendar = google.calendar({
+      version: "v3",
+      auth: await getGoogleOAuthToken(user.id),
+    });
+
+    await calendar.events.insert({
+      calendarId: "primary",
+      conferenceDataVersion: 1,
+      requestBody: {
+        summary: `Ignite Call: ${scheduling.name}`,
+        description: scheduling.observations,
+        start: {
+          dateTime: schedulingDate.format(),
+        },
+        end: {
+          dateTime: schedulingDate.add(1, "hour").format(),
+        },
+        attendees: [
+          {
+            email: scheduling.email,
+            displayName: scheduling.name,
+          },
+        ],
+        conferenceData: {
+          createRequest: {
+            requestId: scheduling.id,
+            conferenceSolutionKey: {
+              type: "hangoutsMeet",
+            },
+          },
+        },
       },
     });
 
