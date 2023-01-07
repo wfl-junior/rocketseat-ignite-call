@@ -1,9 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useState } from "react";
 import { Calendar } from "~/components/Calendar";
-import { messages } from "~/constants";
 import { api } from "~/lib/axios";
 import {
   Container,
@@ -23,29 +22,35 @@ interface CalendarStepProps {}
 export const CalendarStep: React.FC<CalendarStepProps> = () => {
   const { query } = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [availability, setAvailabilily] = useState<Availability | null>(null);
 
-  const username = query.username?.toString();
-
-  useEffect(() => {
-    if (!selectedDate || !username) return;
-
-    api
-      .get<Availability>(`/users/${username}/availability`, {
-        params: {
-          date: selectedDate.toISOString().split("T")[0],
-        },
-      })
-      .then(({ data }) => {
-        setAvailabilily({
-          possibleTimes: data.possibleTimes,
-          availableTimes: data.availableTimes,
-        });
-      })
-      .catch(() => toast(messages.UNEXPECTED_ERROR, { type: "error" }));
-  }, [selectedDate, username]);
-
+  const username = String(query.username);
   const isDateSelected = Boolean(selectedDate);
+  const selectedDateISO = selectedDate
+    ? selectedDate.toISOString().split("T")[0]
+    : null;
+
+  const { data: availability } = useQuery<Availability>(
+    ["users", username, "availability", selectedDateISO],
+    async () => {
+      const { data } = await api.get<Availability>(
+        `/users/${username}/availability`,
+        {
+          params: {
+            date: selectedDate!.toISOString().split("T")[0],
+          },
+        },
+      );
+
+      return {
+        possibleTimes: data.possibleTimes,
+        availableTimes: data.availableTimes,
+      };
+    },
+    {
+      enabled: isDateSelected,
+    },
+  );
+
   const weekDay = selectedDate ? dayjs(selectedDate).format("dddd") : null;
   const describedDate = selectedDate
     ? dayjs(selectedDate).format("DD[ de ]MMMM")
