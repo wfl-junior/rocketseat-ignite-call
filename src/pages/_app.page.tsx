@@ -1,7 +1,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "next-auth/react";
+import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
-import Head from "next/head";
 import { Fragment } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -16,9 +16,15 @@ const App: React.FC<AppProps> = ({
   pageProps: { session, ...pageProps },
 }) => (
   <Fragment>
-    <Head>
-      <title>Ignite Call</title>
-    </Head>
+    <DefaultSeo
+      title="Ignite Call"
+      openGraph={{
+        type: "website",
+        locale: "pt_BR",
+        siteName: "Ignite Call",
+        url: "https://ignite-call.rocketseat.com.br",
+      }}
+    />
 
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>

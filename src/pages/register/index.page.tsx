@@ -2,9 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
 import { AxiosError } from "axios";
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { InputControl } from "~/components/InputControl";
@@ -53,40 +54,44 @@ const Register: NextPage<RegisterProps> = () => {
   });
 
   return (
-    <Container>
-      <Header>
-        <Heading as="strong">Bem-vindo ao Ignite Call!</Heading>
+    <Fragment>
+      <NextSeo title="Crie uma conta | Ignite Call" />
 
-        <Text>
-          Precisamos de algumas informações para criar seu perfil! Ah, você pode
-          editar essas informações depois.
-        </Text>
+      <Container>
+        <Header>
+          <Heading as="strong">Bem-vindo ao Ignite Call!</Heading>
 
-        <MultiStep size={4} currentStep={1} />
-      </Header>
+          <Text>
+            Precisamos de algumas informações para criar seu perfil! Ah, você
+            pode editar essas informações depois.
+          </Text>
 
-      <Form as="form" onSubmit={handleRegister}>
-        <InputControl
-          label="Nome de usuário"
-          prefix="ignite.com/"
-          placeholder="seu-usuario"
-          errorMessage={errors.username?.message}
-          {...register("username")}
-        />
+          <MultiStep size={4} currentStep={1} />
+        </Header>
 
-        <InputControl
-          label="Nome completo"
-          placeholder="Seu nome"
-          errorMessage={errors.name?.message}
-          {...register("name")}
-        />
+        <Form as="form" onSubmit={handleRegister}>
+          <InputControl
+            label="Nome de usuário"
+            prefix="ignite.com/"
+            placeholder="seu-usuario"
+            errorMessage={errors.username?.message}
+            {...register("username")}
+          />
 
-        <Button type="submit" disabled={isSubmitting}>
-          Próximo Passo
-          <ArrowRight />
-        </Button>
-      </Form>
-    </Container>
+          <InputControl
+            label="Nome completo"
+            placeholder="Seu nome"
+            errorMessage={errors.name?.message}
+            {...register("name")}
+          />
+
+          <Button type="submit" disabled={isSubmitting}>
+            Próximo Passo
+            <ArrowRight />
+          </Button>
+        </Form>
+      </Container>
+    </Fragment>
   );
 };
 

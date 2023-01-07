@@ -1,6 +1,8 @@
 import { Avatar, Heading, Text } from "@ignite-ui/react";
 import type { User } from "@prisma/client";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import { NextSeo } from "next-seo";
+import { Fragment } from "react";
 import { prisma } from "~/lib/prisma";
 import { ScheduleForm } from "./ScheduleForm";
 import { Container, UserHeader } from "./styles";
@@ -53,20 +55,24 @@ export const getStaticProps: GetStaticProps<
 };
 
 const Schedule: NextPage<ScheduleProps> = ({ user }) => (
-  <Container>
-    <UserHeader>
-      <Avatar
-        src={user.avatarUrl ?? undefined}
-        alt={user.name}
-        referrerPolicy="no-referrer"
-      />
+  <Fragment>
+    <NextSeo title={`Agendar com ${user.name} | Ignite Call`} />
 
-      <Heading>{user.name}</Heading>
-      <Text>{user.bio}</Text>
-    </UserHeader>
+    <Container>
+      <UserHeader>
+        <Avatar
+          src={user.avatarUrl ?? undefined}
+          alt={user.name}
+          referrerPolicy="no-referrer"
+        />
 
-    <ScheduleForm />
-  </Container>
+        <Heading>{user.name}</Heading>
+        <Text>{user.bio}</Text>
+      </UserHeader>
+
+      <ScheduleForm />
+    </Container>
+  </Fragment>
 );
 
 export default Schedule;

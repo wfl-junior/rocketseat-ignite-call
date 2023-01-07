@@ -3,8 +3,10 @@ import { Avatar, Button, Heading, MultiStep, Text } from "@ignite-ui/react";
 import type { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
+import { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { TextAreaControl } from "~/components/TextAreaControl";
@@ -72,40 +74,44 @@ const UpdateProfile: NextPage<UpdateProfileProps> = () => {
   });
 
   return (
-    <Container>
-      <Header>
-        <Heading as="strong">Atualize seu perfil</Heading>
-        <Text>Por último, uma breve descrição e uma foto de perfil.</Text>
-        <MultiStep size={4} currentStep={4} />
-      </Header>
+    <Fragment>
+      <NextSeo noindex title="Atualize seu perfil | Ignite Call" />
 
-      <ProfileForm as="form" onSubmit={handleUpdateProfile}>
-        <div>
-          <Text size="sm">Foto de perfil</Text>
+      <Container>
+        <Header>
+          <Heading as="strong">Atualize seu perfil</Heading>
+          <Text>Por último, uma breve descrição e uma foto de perfil.</Text>
+          <MultiStep size={4} currentStep={4} />
+        </Header>
 
-          <Avatar
-            src={session?.user.avatarUrl ?? undefined}
-            alt={session?.user.name ?? ""}
-            referrerPolicy="no-referrer"
+        <ProfileForm as="form" onSubmit={handleUpdateProfile}>
+          <div>
+            <Text size="sm">Foto de perfil</Text>
+
+            <Avatar
+              src={session?.user.avatarUrl ?? undefined}
+              alt={session?.user.name ?? ""}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+
+          <TextAreaControl
+            label="Sobre você"
+            errorMessage={errors.bio?.message}
+            {...register("bio")}
           />
-        </div>
 
-        <TextAreaControl
-          label="Sobre você"
-          errorMessage={errors.bio?.message}
-          {...register("bio")}
-        />
+          <FormAnnotation size="sm">
+            Fale um pouco sobre você. Isto será exibido em sua página pessoal.
+          </FormAnnotation>
 
-        <FormAnnotation size="sm">
-          Fale um pouco sobre você. Isto será exibido em sua página pessoal.
-        </FormAnnotation>
-
-        <Button type="submit" disabled={isSubmitting}>
-          Finalizar
-          <ArrowRight />
-        </Button>
-      </ProfileForm>
-    </Container>
+          <Button type="submit" disabled={isSubmitting}>
+            Finalizar
+            <ArrowRight />
+          </Button>
+        </ProfileForm>
+      </Container>
+    </Fragment>
   );
 };
 
