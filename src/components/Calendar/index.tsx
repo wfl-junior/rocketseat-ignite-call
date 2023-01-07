@@ -17,6 +17,7 @@ import {
 
 interface BlockedDates {
   blockedWeekDays: number[];
+  blockedDates: number[];
 }
 
 interface CalendarDay {
@@ -61,7 +62,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
   const username = String(query.username);
   const currentYear = currentDate.get("year");
-  const currentMonth = currentDate.get("month");
+  const currentMonth = currentDate.get("month") + 1;
 
   const { data: blockedDates } = useQuery<BlockedDates>(
     ["users", username, "blocked-dates", currentYear, currentMonth],
@@ -78,6 +79,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       return {
         blockedWeekDays: data.blockedWeekDays,
+        blockedDates: data.blockedDates,
       };
     },
   );
@@ -116,7 +118,8 @@ export const Calendar: React.FC<CalendarProps> = ({
         return formatCalendarDay(
           date,
           date.endOf("day").isBefore(new Date()) ||
-            blockedDates.blockedWeekDays.includes(date.get("day")),
+            blockedDates.blockedWeekDays.includes(date.get("day")) ||
+            blockedDates.blockedDates.includes(date.get("date")),
         );
       }),
       ...nextMonthFillArray.map(date => formatCalendarDay(date, true)),
