@@ -87,7 +87,7 @@ export const TimePickerItem = styled("button", {
   },
 
   "&:disabled": {
-    background: "none",
+    backgroundColor: "$gray700",
     cursor: "not-allowed",
     opacity: 0.4,
   },

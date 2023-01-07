@@ -13,12 +13,17 @@ import {
   TimePickerList,
 } from "./styles";
 
+interface Availability {
+  possibleTimes: number[];
+  availableTimes: number[];
+}
+
 interface CalendarStepProps {}
 
 export const CalendarStep: React.FC<CalendarStepProps> = () => {
   const { query } = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [availability, setAvailabilily] = useState(null);
+  const [availability, setAvailabilily] = useState<Availability | null>(null);
 
   const username = query.username?.toString();
 
@@ -26,12 +31,17 @@ export const CalendarStep: React.FC<CalendarStepProps> = () => {
     if (!selectedDate || !username) return;
 
     api
-      .get(`/users/${username}/availability`, {
+      .get<Availability>(`/users/${username}/availability`, {
         params: {
           date: selectedDate.toISOString().split("T")[0],
         },
       })
-      .then(response => console.log(response.data))
+      .then(({ data }) => {
+        setAvailabilily({
+          possibleTimes: data.possibleTimes,
+          availableTimes: data.availableTimes,
+        });
+      })
       .catch(() => toast(messages.UNEXPECTED_ERROR, { type: "error" }));
   }, [selectedDate, username]);
 
@@ -52,17 +62,14 @@ export const CalendarStep: React.FC<CalendarStepProps> = () => {
           </TimePickerHeader>
 
           <TimePickerList>
-            <TimePickerItem>08:00h</TimePickerItem>
-            <TimePickerItem>09:00h</TimePickerItem>
-            <TimePickerItem>10:00h</TimePickerItem>
-            <TimePickerItem>11:00h</TimePickerItem>
-            <TimePickerItem>12:00h</TimePickerItem>
-            <TimePickerItem>13:00h</TimePickerItem>
-            <TimePickerItem>14:00h</TimePickerItem>
-            <TimePickerItem>15:00h</TimePickerItem>
-            <TimePickerItem>16:00h</TimePickerItem>
-            <TimePickerItem>17:00h</TimePickerItem>
-            <TimePickerItem>18:00h</TimePickerItem>
+            {availability?.possibleTimes.map(hour => (
+              <TimePickerItem
+                key={hour}
+                disabled={!availability.availableTimes.includes(hour)}
+              >
+                {hour.toString().padStart(2, "0")}:00h
+              </TimePickerItem>
+            ))}
           </TimePickerList>
         </TimePicker>
       )}

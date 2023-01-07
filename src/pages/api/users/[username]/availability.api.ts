@@ -36,7 +36,8 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     if (isPastDate) {
       return response.status(200).json({
         ok: true,
-        availability: [],
+        possibleTimes: [],
+        availableTimes: [],
       });
     }
 
@@ -50,7 +51,8 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     if (!userAvailability) {
       return response.status(200).json({
         ok: true,
-        availability: [],
+        possibleTimes: [],
+        availableTimes: [],
       });
     }
 
