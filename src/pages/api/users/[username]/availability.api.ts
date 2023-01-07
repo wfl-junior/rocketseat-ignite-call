@@ -80,9 +80,12 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     });
 
     const availableTimes = possibleTimes.filter(time => {
-      return !blockedTimes.some(
+      const isTimeInPast = referenceDate.set("hour", time).isBefore(new Date());
+      const isTimeBlocked = blockedTimes.some(
         blockedTime => blockedTime.date.getHours() === time,
       );
+
+      return !isTimeInPast && !isTimeBlocked;
     });
 
     return response.status(200).json({

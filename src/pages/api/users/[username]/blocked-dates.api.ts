@@ -3,9 +3,11 @@ import { prisma } from "~/lib/prisma";
 import { internalServerErrorResponse } from "~/utils/internal-server-error-response";
 
 type BlockedDatesRawQueryResult = Array<{
-  date: number;
+  day: number;
   amount: number;
   size: number;
+  endTimeInMinutes: number;
+  currentTimeInMinutes: number;
 }>;
 
 async function handler(request: NextApiRequest, response: NextApiResponse) {
@@ -62,20 +64,28 @@ async function handler(request: NextApiRequest, response: NextApiResponse) {
     });
 
     const blockedDatesRaw = await prisma.$queryRaw<BlockedDatesRawQueryResult>`
-      SELECT 
-        EXTRACT(DAY FROM S.date) AS date,
+      SELECT
+        EXTRACT(DAY FROM S.date) AS day,
         COUNT(S.date) AS amount,
-        ((TI.endTimeInMinutes - TI.startTimeInMinutes) / 60) AS size
+        (TI.endTimeInMinutes - TI.startTimeInMinutes) / 60 AS size,
+        TI.endTimeInMinutes AS endTimeInMinutes,
+        HOUR(NOW()) * 60 + MINUTE(NOW()) AS currentTimeInMinutes
       FROM schedulings S
       LEFT JOIN time_intervals TI
         ON TI.weekDay = WEEKDAY(DATE_ADD(S.date, INTERVAL 1 DAY))
       WHERE S.userId = ${user.id}
         AND DATE_FORMAT(S.date, "%Y-%m") = ${`${year}-${month}`}
-      GROUP BY date, size
-      HAVING amount >= size;
+      GROUP BY
+        day,
+        size,
+        endTimeInMinutes,
+        currentTimeInMinutes
+      HAVING amount >= size
+        OR (day <= EXTRACT(DAY FROM NOW())
+          AND currentTimeInMinutes >= endTimeInMinutes - 60);
     `;
 
-    const blockedDates = blockedDatesRaw.map(item => item.date);
+    const blockedDates = blockedDatesRaw.map(item => item.day);
 
     return response.status(200).json({
       ok: true,
