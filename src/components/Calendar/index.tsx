@@ -15,6 +15,7 @@ import {
 interface CalendarDay {
   id: string;
   dayNumber: number;
+  date: Date;
   isDisabled: boolean;
 }
 
@@ -30,45 +31,37 @@ function formatCalendarDay(
   return {
     id: date.toISOString(),
     dayNumber: date.get("date"),
+    date: date.toDate(),
     isDisabled,
   };
 }
 
 const shortWeekDays = getWeekDays({ short: true });
 
-interface CalendarProps {}
+interface CalendarProps {
+  selectedDate: Date | null;
+  onDateSelected: (date: Date) => void;
+}
 
-export const Calendar: React.FC<CalendarProps> = () => {
+export const Calendar: React.FC<CalendarProps> = ({
+  selectedDate,
+  onDateSelected,
+}) => {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set("date", 1);
   });
-
-  function handlePreviousMonth() {
-    const previousMonthDate = currentDate.subtract(1, "month");
-    setCurrentDate(previousMonthDate);
-  }
-
-  function handleNextMonth() {
-    const nextMonthDate = currentDate.add(1, "month");
-    setCurrentDate(nextMonthDate);
-  }
-
-  const currentMonth = currentDate.format("MMMM");
-  const currentYear = currentDate.format("YYYY");
 
   const calendarWeeks = useMemo((): CalendarWeek[] => {
     const daysInMonthArray = Array.from(
       { length: currentDate.daysInMonth() },
       (_, index) => currentDate.set("date", index + 1),
-    ).map(date => formatCalendarDay(date, false));
+    );
 
     const firstWeekDay = currentDate.get("day");
     const previousMonthFillArray = Array.from(
       { length: firstWeekDay },
       (_, index) => currentDate.subtract(index + 1, "day"),
-    )
-      .reverse()
-      .map(date => formatCalendarDay(date, true));
+    ).reverse();
 
     const lastDayInCurrentMonth = currentDate.set(
       "date",
@@ -80,12 +73,14 @@ export const Calendar: React.FC<CalendarProps> = () => {
     const nextMonthFillArray = Array.from(
       { length: 7 - (lastWeekDay + 1) },
       (_, index) => lastDayInCurrentMonth.add(index + 1, "day"),
-    ).map(date => formatCalendarDay(date, true));
+    );
 
     const calendarDays = [
-      ...previousMonthFillArray,
-      ...daysInMonthArray,
-      ...nextMonthFillArray,
+      ...previousMonthFillArray.map(date => formatCalendarDay(date, true)),
+      ...daysInMonthArray.map(date => {
+        return formatCalendarDay(date, date.endOf("day").isBefore(new Date()));
+      }),
+      ...nextMonthFillArray.map(date => formatCalendarDay(date, true)),
     ];
 
     const calendarWeeks: CalendarWeek[] = [];
@@ -100,6 +95,25 @@ export const Calendar: React.FC<CalendarProps> = () => {
 
     return calendarWeeks;
   }, [currentDate]);
+
+  function handlePreviousMonth() {
+    const previousMonthDate = currentDate.subtract(1, "month");
+    setCurrentDate(previousMonthDate);
+  }
+
+  function handleNextMonth() {
+    const nextMonthDate = currentDate.add(1, "month");
+    setCurrentDate(nextMonthDate);
+  }
+
+  const currentMonth = currentDate.format("MMMM");
+  const currentYear = currentDate.format("YYYY");
+
+  function handleSelectDay(date: Date) {
+    return () => {
+      onDateSelected(date);
+    };
+  }
 
   return (
     <CalendarContainer>
@@ -131,9 +145,14 @@ export const Calendar: React.FC<CalendarProps> = () => {
         <tbody>
           {calendarWeeks.map(({ week, days }) => (
             <tr key={week}>
-              {days.map(({ id, dayNumber, isDisabled }) => (
-                <td key={id}>
-                  <CalendarDay disabled={isDisabled}>{dayNumber}</CalendarDay>
+              {days.map(day => (
+                <td key={day.id}>
+                  <CalendarDay
+                    disabled={day.isDisabled}
+                    onClick={handleSelectDay(day.date)}
+                  >
+                    {day.dayNumber}
+                  </CalendarDay>
                 </td>
               ))}
             </tr>
