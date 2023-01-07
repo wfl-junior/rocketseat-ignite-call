@@ -12,6 +12,28 @@ import {
   CalendarTitle,
 } from "./styles";
 
+interface CalendarDay {
+  id: string;
+  dayNumber: number;
+  isDisabled: boolean;
+}
+
+interface CalendarWeek {
+  week: number;
+  days: CalendarDay[];
+}
+
+function formatCalendarDay(
+  date: dayjs.Dayjs,
+  isDisabled: boolean,
+): CalendarDay {
+  return {
+    id: date.toISOString(),
+    dayNumber: date.get("date"),
+    isDisabled,
+  };
+}
+
 const shortWeekDays = getWeekDays({ short: true });
 
 interface CalendarProps {}
@@ -34,22 +56,50 @@ export const Calendar: React.FC<CalendarProps> = () => {
   const currentMonth = currentDate.format("MMMM");
   const currentYear = currentDate.format("YYYY");
 
-  const calendarWeeks = useMemo(() => {
+  const calendarWeeks = useMemo((): CalendarWeek[] => {
     const daysInMonthArray = Array.from(
       { length: currentDate.daysInMonth() },
       (_, index) => currentDate.set("date", index + 1),
-    );
+    ).map(date => formatCalendarDay(date, false));
 
     const firstWeekDay = currentDate.get("day");
     const previousMonthFillArray = Array.from(
       { length: firstWeekDay },
       (_, index) => currentDate.subtract(index + 1, "day"),
-    ).reverse();
+    )
+      .reverse()
+      .map(date => formatCalendarDay(date, true));
 
-    return [...previousMonthFillArray, ...daysInMonthArray];
+    const lastDayInCurrentMonth = currentDate.set(
+      "date",
+      currentDate.daysInMonth(),
+    );
+
+    const lastWeekDay = lastDayInCurrentMonth.get("day");
+
+    const nextMonthFillArray = Array.from(
+      { length: 7 - (lastWeekDay + 1) },
+      (_, index) => lastDayInCurrentMonth.add(index + 1, "day"),
+    ).map(date => formatCalendarDay(date, true));
+
+    const calendarDays = [
+      ...previousMonthFillArray,
+      ...daysInMonthArray,
+      ...nextMonthFillArray,
+    ];
+
+    const calendarWeeks: CalendarWeek[] = [];
+    let week = 0;
+
+    while (calendarDays.length > 0) {
+      calendarWeeks.push({
+        week: ++week,
+        days: calendarDays.splice(0, 7),
+      });
+    }
+
+    return calendarWeeks;
   }, [currentDate]);
-
-  console.log(calendarWeeks);
 
   return (
     <CalendarContainer>
@@ -79,54 +129,15 @@ export const Calendar: React.FC<CalendarProps> = () => {
         </thead>
 
         <tbody>
-          <tr>
-            <td />
-            <td />
-            <td />
-            <td />
-
-            <td>
-              <CalendarDay>1</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay>2</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay disabled>3</CalendarDay>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-              <CalendarDay disabled>4</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay>5</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay>6</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay>7</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay>8</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay>9</CalendarDay>
-            </td>
-
-            <td>
-              <CalendarDay disabled>10</CalendarDay>
-            </td>
-          </tr>
+          {calendarWeeks.map(({ week, days }) => (
+            <tr key={week}>
+              {days.map(({ id, dayNumber, isDisabled }) => (
+                <td key={id}>
+                  <CalendarDay disabled={isDisabled}>{dayNumber}</CalendarDay>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </CalendarBody>
     </CalendarContainer>
