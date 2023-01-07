@@ -47,14 +47,10 @@ function formatCalendarDay(
 const shortWeekDays = getWeekDays({ short: true });
 
 interface CalendarProps {
-  selectedDate: Date | null;
   onDateSelected: (date: Date) => void;
 }
 
-export const Calendar: React.FC<CalendarProps> = ({
-  selectedDate,
-  onDateSelected,
-}) => {
+export const Calendar: React.FC<CalendarProps> = ({ onDateSelected }) => {
   const { query } = useRouter();
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set("date", 1);

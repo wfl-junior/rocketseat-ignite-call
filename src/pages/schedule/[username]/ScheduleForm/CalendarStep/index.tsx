@@ -17,9 +17,13 @@ interface Availability {
   availableTimes: number[];
 }
 
-interface CalendarStepProps {}
+interface CalendarStepProps {
+  onSelectDateTime: (date: Date) => void;
+}
 
-export const CalendarStep: React.FC<CalendarStepProps> = () => {
+export const CalendarStep: React.FC<CalendarStepProps> = ({
+  onSelectDateTime,
+}) => {
   const { query } = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -51,6 +55,18 @@ export const CalendarStep: React.FC<CalendarStepProps> = () => {
     },
   );
 
+  function handleSelectTime(hour: number) {
+    if (!selectedDate) return;
+
+    return () => {
+      const dateWithTime = dayjs(selectedDate)
+        .set("hour", hour)
+        .startOf("hour");
+
+      onSelectDateTime(dateWithTime.toDate());
+    };
+  }
+
   const weekDay = selectedDate ? dayjs(selectedDate).format("dddd") : null;
   const describedDate = selectedDate
     ? dayjs(selectedDate).format("DD[ de ]MMMM")
@@ -58,7 +74,7 @@ export const CalendarStep: React.FC<CalendarStepProps> = () => {
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
-      <Calendar selectedDate={selectedDate} onDateSelected={setSelectedDate} />
+      <Calendar onDateSelected={setSelectedDate} />
 
       {isDateSelected && (
         <TimePicker>
@@ -70,6 +86,7 @@ export const CalendarStep: React.FC<CalendarStepProps> = () => {
             {availability?.possibleTimes.map(hour => (
               <TimePickerItem
                 key={hour}
+                onClick={handleSelectTime(hour)}
                 disabled={!availability.availableTimes.includes(hour)}
               >
                 {hour.toString().padStart(2, "0")}:00h
