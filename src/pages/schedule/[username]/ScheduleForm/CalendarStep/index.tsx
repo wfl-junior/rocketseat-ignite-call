@@ -40,7 +40,7 @@ export const CalendarStep: React.FC<CalendarStepProps> = ({
         `/users/${username}/availability`,
         {
           params: {
-            date: selectedDate!.toISOString().split("T")[0],
+            date: selectedDate!.toISOString(),
           },
         },
       );
